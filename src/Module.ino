@@ -35,7 +35,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // Module id
 const int mod_id = 0;
 
-#include "config_pins.h"
+#include "config_pins.hpp"
 
 // Setup a oneWire instance to communicate with any OneWire devices
 OneWire oneWire(oneWireBus);
@@ -51,7 +51,6 @@ const char* password = "dosestudos";
 
 //Your Domain name with URL path or IP address with path
 String serverName = "https://fastapi-tcc.herokuapp.com/";
-//const char*  serverName = "https://fastapi-tcc.herokuapp.com/";
 
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
@@ -175,8 +174,6 @@ void displayTemp(float temp) {
   display.clearDisplay();
   display.setCursor(0, 10);
   display.setTextSize(2);
-  //display.setTextColor(WHITE);
-  // Display text
   display.println(DateTime.toString());
   display.println(String(temp) + " C");
   display.display(); 
@@ -195,6 +192,9 @@ void insert_temp(float temp) {
   HTTPClient http;
 
   String serverPath = serverName + "Insert_TEMP/?temp=" + String(temp) + "&mod_id=" + String(mod_id) + "&timestamp=" + DateTime.toString(); // Endpoint + data for input in db
+  String sub1 = " ";
+  String sub2 = "%20";
+  serverPath.replace(sub1, sub2);
   Serial.print("serverPath = ");
   Serial.println(serverPath);
 
