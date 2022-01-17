@@ -2,10 +2,15 @@
 #ifndef _CONFIG_MOD_DEFINES_HPP_
 #define _CONFIG_MOD_DEFINES_HPP_
 
-
 // Module id
 const int mod_id = 0;
 
+// Wifi credentials
+const char *ssid = "Bunker";
+const char *password = "dosestudos";
+
+// Timezone for DateTime library
+const char *TZ = "<+03>-3"; // GMT-3
 
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.

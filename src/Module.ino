@@ -1,3 +1,7 @@
+#include "config_pins.hpp"
+#include "config_mod_defines.hpp"
+#include "config_display.hpp"
+
 #include <HTTPClient.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -18,15 +22,6 @@
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 
-// Timezone for DateTime library
-const char *TZ = "<+03>-3"; // GMT-3
-
-// Module id
-const int mod_id = 0;
-
-#include "config_pins.hpp"
-#include "config_display.hpp"
-
 // Setup a oneWire instance to communicate with any OneWire devices
 OneWire oneWire(oneWireBus);
 
@@ -35,22 +30,8 @@ DallasTemperature sensors(&oneWire);
 const int nSensors = int(sensors.getDeviceCount());
 DeviceAddress sensors_addr[2];
 
-// Wifi credentials
-const char *ssid = "Bunker";
-const char *password = "dosestudos";
-
 //Your Domain name with URL path or IP address with path
 String serverName = "https://fastapi-tcc.herokuapp.com/";
-
-// the following variables are unsigned longs because the time, measured in
-// milliseconds, will quickly become a bigger number than can be stored in an int.
-unsigned long lastTime = 0;
-unsigned long lastTimePost = 0;
-unsigned long lastTimeLight = 0;
-// Set timer to 30 seconds (30000)
-unsigned long timerDelay = 10000;
-unsigned long timerDelayPost = 60000;
-unsigned long timerDelayLight = 5000;
 
 String translateEncryptionType(wifi_auth_mode_t encryptionType)
 {
