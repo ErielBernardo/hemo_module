@@ -1,6 +1,7 @@
 #include "config_pins.hpp"
 #include "config_mod_defines.hpp"
 #include "config_display.hpp"
+#include "config_DateTime.hpp"
 
 #include <HTTPClient.h>
 #include <OneWire.h>
@@ -8,10 +9,7 @@
 #include <WiFi.h>
 #include <Arduino_JSON.h>
 
-/* DateTime */
-#include <ESPDateTime.h>
-
-/* Time Stamp */
+/* Time Stamp 
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 
@@ -21,6 +19,8 @@
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
+*/
+
 
 // Setup a oneWire instance to communicate with any OneWire devices
 OneWire oneWire(oneWireBus);
@@ -30,8 +30,18 @@ DallasTemperature sensors(&oneWire);
 const int nSensors = int(sensors.getDeviceCount());
 DeviceAddress sensors_addr[2];
 
+// Wifi credentials
+const char *ssid = SSID_CONN;
+const char *password = PASSWORD_CONN;
+
 //Your Domain name with URL path or IP address with path
 String serverName = "https://fastapi-tcc.herokuapp.com/";
+
+// the following variables are unsigned longs because the time, measured in
+// milliseconds, will quickly become a bigger number than can be stored in an int.
+unsigned long lastTime = 0;
+unsigned long lastTimePost = 0;
+unsigned long lastTimeLight = 0;
 
 String translateEncryptionType(wifi_auth_mode_t encryptionType)
 {
@@ -92,25 +102,6 @@ void connectToNetwork()
   Serial.println("Connected to network");
 }
 
-void setupDateTime()
-{
-  // setup this after wifi connected
-  // you can use custom timeZone,server and timeout
-  // DateTime.setTimeZone("CST-8");
-  // DateTime.setServer("asia.pool.ntp.org");
-  // DateTime.begin(15 * 1000);
-  // from
-  /** changed from 0.2.x **/
-  DateTime.setTimeZone(TZ);
-  // this method config ntp and wait for time sync
-  // default timeout is 10 seconds
-  DateTime.begin(/* timeout param */);
-  if (!DateTime.isTimeValid())
-  {
-    Serial.println("Failed to get time from server.");
-  }
-}
-
 void setupOneWire()
 {
   Serial.println(nSensors);
@@ -148,10 +139,8 @@ void insert_temp(float temp)
 
   HTTPClient http;
 
-  String serverPath = serverName + "Insert_TEMP/?temp=" + String(temp) + "&mod_id=" + String(mod_id) + "&timestamp=" + DateTime.toString(); // Endpoint + data for input in db
-  String sub1 = " ";
-  String sub2 = "%20";
-  serverPath.replace(sub1, sub2);
+  String serverPath = serverName + "Insert_TEMP/?temp=" + String(temp) + "&mod_id=" + String(MOD_ID) + "&timestamp=" + DateTime.toString(); // Endpoint + data for input in db
+  serverPath.replace(" ", "%20");
   Serial.print("serverPath = ");
   Serial.println(serverPath);
 
@@ -267,7 +256,7 @@ void setup()
   Serial.println(WiFi.localIP());
 
   // RTC
-  timeClient.begin();
+  // timeClient.begin();
   setupDateTime();
 
   setupOLDE();
@@ -287,9 +276,11 @@ void loop()
     connectToNetwork();
   }
 
+  /* // RTC 
   timeClient.update();
   String formattedTime = timeClient.getFormattedTime();
-  // Serial.println(formattedTime);
+  Serial.println(formattedTime);*/
+
   String timestamp = DateTime.toString();
   // Serial.println(timestamp);
 
@@ -298,7 +289,7 @@ void loop()
 
   // Get temperature from DS18B sensor status and display celsius
   float temp = getTemp();
-  displayTemp(temp, mod_id);
+  displayTemp(temp, MOD_ID);
 
   unsigned long millis_var = millis();
 
