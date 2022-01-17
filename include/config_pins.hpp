@@ -1,6 +1,6 @@
 /* File foo.  */
-#ifndef _CONFIG_PINS_H_
-#define _CONFIG_PINS_H_
+#ifndef _CONFIG_PINS_HPP_
+#define _CONFIG_PINS_HPP_
 
 // GPIO where the DS18B20 is connected to (23)
 #define oneWireBus 14

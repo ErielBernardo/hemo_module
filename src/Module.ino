@@ -2,11 +2,12 @@
 #include "config_mod_defines.hpp"
 #include "config_display.hpp"
 #include "config_DateTime.hpp"
+#include "config_Wifi.hpp"
 
 #include <HTTPClient.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include <WiFi.h>
+
 #include <Arduino_JSON.h>
 
 /* Time Stamp 
@@ -21,7 +22,6 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 */
 
-
 // Setup a oneWire instance to communicate with any OneWire devices
 OneWire oneWire(oneWireBus);
 
@@ -29,10 +29,6 @@ OneWire oneWire(oneWireBus);
 DallasTemperature sensors(&oneWire);
 const int nSensors = int(sensors.getDeviceCount());
 DeviceAddress sensors_addr[2];
-
-// Wifi credentials
-const char *ssid = SSID_CONN;
-const char *password = PASSWORD_CONN;
 
 //Your Domain name with URL path or IP address with path
 String serverName = "https://fastapi-tcc.herokuapp.com/";
@@ -42,65 +38,6 @@ String serverName = "https://fastapi-tcc.herokuapp.com/";
 unsigned long lastTime = 0;
 unsigned long lastTimePost = 0;
 unsigned long lastTimeLight = 0;
-
-String translateEncryptionType(wifi_auth_mode_t encryptionType)
-{
-  switch (encryptionType)
-  {
-  case (WIFI_AUTH_OPEN):
-    return "Open";
-  case (WIFI_AUTH_WEP):
-    return "WEP";
-  case (WIFI_AUTH_WPA_PSK):
-    return "WPA_PSK";
-  case (WIFI_AUTH_WPA2_PSK):
-    return "WPA2_PSK";
-  case (WIFI_AUTH_WPA_WPA2_PSK):
-    return "WPA_WPA2_PSK";
-  case (WIFI_AUTH_WPA2_ENTERPRISE):
-    return "WPA2_ENTERPRISE";
-  }
-}
-
-void scanNetworks()
-{
-
-  int numberOfNetworks = WiFi.scanNetworks();
-
-  Serial.print("Number of networks found: ");
-  Serial.println(numberOfNetworks);
-
-  for (int i = 0; i < numberOfNetworks; i++)
-  {
-
-    Serial.print("Network name: ");
-    Serial.println(WiFi.SSID(i));
-
-    Serial.print("Signal strength: ");
-    Serial.println(WiFi.RSSI(i));
-
-    Serial.print("MAC address: ");
-    Serial.println(WiFi.BSSIDstr(i));
-
-    Serial.print("Encryption type: ");
-    String encryptionTypeDescription = translateEncryptionType(WiFi.encryptionType(i));
-    Serial.println(encryptionTypeDescription);
-    Serial.println("-----------------------");
-  }
-}
-
-void connectToNetwork()
-{
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(1000);
-    Serial.println("Establishing connection to WiFi..");
-  }
-
-  Serial.println("Connected to network");
-}
 
 void setupOneWire()
 {
@@ -248,18 +185,13 @@ void setup()
 
   setupOneWire();
 
-  // wifi settings
-  digitalWrite(LED_BUILTIN, LOW); // turn the LED off
-  scanNetworks();
-  connectToNetwork();
-  Serial.println(WiFi.macAddress());
-  Serial.println(WiFi.localIP());
+  setupOLDE();
 
   // RTC
   // timeClient.begin();
   setupDateTime();
-
-  setupOLDE();
+  
+  setupWifi();
 }
 
 void loop()
