@@ -1,4 +1,4 @@
-#include "config_Wifi.hpp"
+#include "Wifi.hpp"
 
 // Wifi credentials
 const char *ssid = SSID_CONN;
