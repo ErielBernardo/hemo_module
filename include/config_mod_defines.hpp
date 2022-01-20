@@ -4,6 +4,9 @@
 // Module id
 #define MOD_ID 0
 
+//Your Domain name with URL path or IP address with path
+#define SERVERNAME "https://fastapi-tcc.herokuapp.com/"
+
 // Wifi credentials
 #define SSID_CONN "Bunker"
 #define PASSWORD_CONN "dosestudos"
