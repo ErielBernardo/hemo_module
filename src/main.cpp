@@ -3,6 +3,7 @@
 #include "Display.hpp"
 #include "DateTime.hpp"
 #include "Wifi.hpp"
+#include "DS198B_Sensor.hpp"
 
 #include <HTTPClient.h>
 #include <OneWire.h>
