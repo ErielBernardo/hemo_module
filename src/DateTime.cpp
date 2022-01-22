@@ -17,4 +17,9 @@ void setupDateTime()
   {
     Serial.println("Failed to get time from server.");
   }
+  else
+  {
+    Serial.printf("Date Now is %s\n", DateTime.toISOString().c_str());
+    Serial.printf("Timestamp is %ld\n", DateTime.now());
+  }
 }

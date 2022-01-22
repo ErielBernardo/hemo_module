@@ -17,6 +17,6 @@
 #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 
 void setupOLDE();
-void displayTemp(float temp, int mod_id);
+void displayTemp(float TempCamara, float TempAT, int mod_id);
 
 #endif

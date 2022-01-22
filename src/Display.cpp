@@ -13,22 +13,30 @@ void setupOLDE()
     delay(2000);
     display.clearDisplay();
     display.setRotation(2);
-    display.setTextSize(1);
+    display.setTextSize(2);
     display.setTextColor(WHITE);
 
-    display.setCursor(0, 0);
-    // Display static text
+    display.setCursor(10, 0);
     display.println("Hello, world!");
     display.display();
 }
 
-void displayTemp(float temp, int mod_id)
+void displayTemp(float TempCamara, float TempAT, int mod_id)
 {
+    DateTimeParts p = DateTime.getParts();
+    char Time[50];
+    sprintf(Time, "%02d:%02d:%02d", p.getHours(), p.getMinutes(), p.getSeconds());
     display.clearDisplay();
     display.setCursor(0, 0);
     display.setTextSize(2);
-    display.println(DateTime.toString());
-    display.println(String(temp) + "C");
+    display.println(Time);
+    display.print(String(TempCamara) + "C");
+    display.setTextSize(1);
+    display.println(" Camara\n");
+    display.setTextSize(2);
+    display.print(String(TempAT) + "C");
+    display.setTextSize(1);
+    display.println(" Ambiente\n");
     display.println("MOD " + String(mod_id));
     display.display();
 }

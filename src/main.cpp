@@ -20,7 +20,6 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 */
 
-
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
 unsigned long lastTime = 0;
@@ -31,7 +30,6 @@ void setup()
 {
     // Start the Serial Monitor
     Serial.begin(115200);
-    delay(20050);
     // define o pino relativo ao Buzzer de saida
     pinMode(Buzzer, OUTPUT);
     // define o pino relativo ao Rele de saida
@@ -41,15 +39,12 @@ void setup()
     // define o pino relativo ao LED interno
     pinMode(LED_BUILTIN, OUTPUT);
 
-    setupOneWire();
-
     setupOLDE();
-
+    setupOneWire();
+    setupWifi();
     // RTC
     // timeClient.begin();
     setupDateTime();
-
-    setupWifi();
 }
 
 void loop()
@@ -65,21 +60,20 @@ void loop()
         digitalWrite(LED_BUILTIN, LOW); // turn the LED off
         connectToNetwork();
     }
-
-    /* // RTC 
-  timeClient.update();
-  String formattedTime = timeClient.getFormattedTime();
-  Serial.println(formattedTime);*/
-
     String timestamp = DateTime.toString();
     // Serial.println(timestamp);
 
+    /* // RTC 
+    timeClient.update();
+    String formattedTime = timeClient.getFormattedTime();
+    Serial.println(formattedTime);*/
+
     // read ldr sensor status
     int ldr_status = digitalRead(ldr_sensor);
-
     // Get temperature from DS18B sensor status and display celsius
-    float temp = getTemp();
-    displayTemp(temp, MOD_ID);
+    float TempAT = getTemp(sensorsAT);
+    float TempCamara = getTemp(sensors);
+    displayTemp(TempCamara, TempAT, MOD_ID);
 
     unsigned long millis_var = millis();
 
@@ -91,10 +85,10 @@ void loop()
         lastTimeLight = millis();
     }
 
-    //Send an HTTP POST request every 10 minutes
+    //Send an HTTP POST request every timerDelayPost minutes
     if ((millis_var - lastTimePost) > timerDelayPost)
     {
-        insert_temp(temp);
+        insert_temp(TempCamara);
         lastTimePost = millis();
     }
 }
