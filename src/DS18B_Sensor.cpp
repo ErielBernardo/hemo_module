@@ -13,8 +13,8 @@ DallasTemperature StorageSensors(&oneWireStorage);
 const int nSensors = int(StorageSensors.getDeviceCount());
 DeviceAddress sensors_addr[2];
 
-float StorageTemp = getTemp(StorageSensors);
-float AmbientTemp = getTemp(AmbientSensor);
+float StorageTemp = 0;
+float AmbientTemp = 0;
 
 void setupOneWire()
 {
@@ -43,6 +43,8 @@ void setupOneWire()
             Serial.print(addr[i], HEX);
         }
     }
+    StorageTemp = getTemp(StorageSensors);
+    AmbientTemp = getTemp(AmbientSensor);
 }
 
 float getTemp(DallasTemperature sensors)
@@ -51,4 +53,13 @@ float getTemp(DallasTemperature sensors)
     float temperatureC = sensors.getTempCByIndex(0);
 
     return temperatureC;
+}
+
+void updateTemps()
+{
+    AmbientSensor.requestTemperatures();
+    AmbientTemp = AmbientSensor.getTempCByIndex(0);
+    StorageSensors.requestTemperatures();
+    StorageTemp = StorageSensors.getTempCByIndex(0);
+    // Serial.println("StorageTemp " + String(StorageSensors.getTempCByIndex(0)) + "°C - AmbientSensor " + String(AmbientSensor.getTempCByIndex(0)) + "°C\n");
 }

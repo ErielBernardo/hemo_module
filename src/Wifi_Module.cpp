@@ -65,6 +65,7 @@ void connectToNetwork()
 
 void checkNetwork()
 {
+    Serial.println("Check WiFi connection status");
     //Check WiFi connection status
     if (WiFi.status() != WL_CONNECTED)
     {

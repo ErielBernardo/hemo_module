@@ -22,6 +22,12 @@
 #define shortPeriodAlert 50
 #define longPeriodAlert 2000
 
+#define taskPeriodWifi 120000
+#define taskPeriodTemperature 1000
+#define taskPeriodDisplay 500
+#define taskPeriodSoundAlert 100
+#define taskPeriodPostAPI 10000
+
 // Timezone for DateTime library
 #define TZ "<+03>-3" // GMT-3
 

@@ -149,22 +149,22 @@ void sound_alert(int ldr_status)
         {
             buzzer_state = HIGH; // Turn buzzer on
             lastTimeAlertOn = millis_var;
-            Serial.println("Buzzer ON at  " + String(millis_var) + " Tempo desligado " + String(millis_var - lastTimeAlertOff));
+            Serial.println(String(StorageTemp) + "°C " + "Buzzer ON at  " + String(millis_var) + " Tempo desligado " + String(millis_var - lastTimeAlertOff));
         }
         else if ((buzzer_state == HIGH) && ((millis_var - lastTimeAlertOn) > shortPeriodAlert))
         {
             buzzer_state = LOW; // Turn buzzer off
             lastTimeAlertOff = millis_var;
-            Serial.println("Buzzer OFF at " + String(millis_var) + " Tempo ligado    " + String(millis_var - lastTimeAlertOn));
+            Serial.println(String(StorageTemp) + "°C " + "Buzzer OFF at " + String(millis_var) + " Tempo ligado    " + String(millis_var - lastTimeAlertOn));
         }
     }
     digitalWrite(Buzzer, buzzer_state);
 }
 
-void sound_alert_test(int ldr_status, float storage_temp)
+void sound_alert_test(int ldr_status)
 {
     unsigned long millis_var = millis();
-    if (ldr_status == HIGH && (storage_temp > BULLET_TEMP))
+    if (ldr_status == HIGH && (StorageTemp > BULLET_TEMP))
     {
         buzzer_state = LOW; //turn buzzer off
     }
@@ -174,43 +174,16 @@ void sound_alert_test(int ldr_status, float storage_temp)
         {
             buzzer_state = HIGH; // Turn buzzer on
             lastTimeAlertOn = millis_var;
-            Serial.println("Buzzer ON at  " + String(millis_var) + " Tempo desligado " + String(millis_var - lastTimeAlertOff));
+            Serial.println(String(StorageTemp) + "°C " + "Buzzer ON at  " + String(millis_var) + " Tempo desligado " + String(millis_var - lastTimeAlertOff));
         }
         else if ((buzzer_state == HIGH) && ((millis_var - lastTimeAlertOn) > shortPeriodAlert))
         {
             buzzer_state = LOW; // Turn buzzer off
             lastTimeAlertOff = millis_var;
-            Serial.println("Buzzer OFF at " + String(millis_var) + " Tempo ligado    " + String(millis_var - lastTimeAlertOn));
+            Serial.println(String(StorageTemp) + "°C " + "Buzzer OFF at " + String(millis_var) + " Tempo ligado    " + String(millis_var - lastTimeAlertOn));
         }
     }
     digitalWrite(Buzzer, buzzer_state);
-}
-
-void sound_alert_OLD(int ldr_status)
-{
-    if (ldr_status == HIGH)
-    {
-        Serial.println("Nao há luz. Porta fechada");
-        digitalWrite(Rele, LOW);
-    }
-    else
-    {
-        Serial.println("Porta aberta");
-        digitalWrite(Rele, HIGH);   // only test
-        digitalWrite(Buzzer, HIGH); //turn buzzer on
-        delay(500);
-        digitalWrite(Buzzer, LOW); //turn buzzer off
-    }
-}
-
-void HandlerTemperature(void *pvParameters)
-{
-    for (;;)
-    { // Loop infinito
-        // Get temperature from DS18B sensor status and display celsius
-        StorageTemp = getTemp(StorageSensors);
-        AmbientTemp = getTemp(AmbientSensor);
-    }
 }
 
 void HandlerWiFi(void *pvParameters)
@@ -219,6 +192,27 @@ void HandlerWiFi(void *pvParameters)
     { // Loop infinito
         //Check WiFi connection status
         checkNetwork();
+        vTaskDelay(taskPeriodWifi / portTICK_PERIOD_MS);
+    }
+}
+
+void HandlerTemperature(void *pvParameters)
+{
+    for (;;)
+    { // Loop infinito
+        // Get temperature from DS18B sensors status
+        updateTemps();
+        vTaskDelay(taskPeriodTemperature / portTICK_PERIOD_MS);
+    }
+}
+
+void HandlerDisplay(void *pvParameters)
+{
+    for (;;)
+    { // Loop infinito
+        displayTemp();
+        // displayTempDEBUG();
+        vTaskDelay(taskPeriodDisplay / portTICK_PERIOD_MS);
     }
 }
 
@@ -227,8 +221,18 @@ void HandlerPost(void *pvParameters)
     for (;;)
     { // Loop infinito
         // Send an HTTP POST request every timerDelayPost minutes
-        insert_temp(StorageTemp, digitalRead(LDR_Sensor));
-        // insert_temp_test(StorageTemp, AmbientTemp, ldr_status); // Post de testes
-        delay(timerDelayPost);
+        // insert_temp(StorageTemp, digitalRead(LDR_Sensor));
+        // insert_temp_test(StorageTemp, AmbientTemp, digitalRead(LDR_Sensor)); // Post de testes
+        vTaskDelay(taskPeriodPostAPI / portTICK_PERIOD_MS);
+    }
+}
+
+void HandlerSoundAlert(void *pvParameters)
+{
+    for (;;)
+    { // Loop infinito
+        // sound_alert(digitalRead(LDR_Sensor));
+        sound_alert_test(digitalRead(LDR_Sensor));
+        vTaskDelay(taskPeriodSoundAlert / portTICK_PERIOD_MS);
     }
 }

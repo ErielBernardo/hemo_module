@@ -1,12 +1,6 @@
 #include "config_pins.hpp"
 #include "config_mod_defines.hpp"
 #include "Module.hpp"
-#include "Display.hpp"
-#include "DateTime.hpp"
-#include "Wifi_Module.hpp"
-#include "DS18B_Sensor.hpp"
-
-#include <Arduino_JSON.h>
 
 // the following variables are unsigned longs because the time, measured in
 // milliseconds, will quickly become a bigger number than can be stored in an int.
@@ -16,6 +10,8 @@ unsigned long lastTimePost = 0;
 TaskHandle_t TaskHandlerTemperature;
 TaskHandle_t TaskHandlerWiFi;
 TaskHandle_t TaskHandlerPost;
+TaskHandle_t TaskHandlerDisplay;
+TaskHandle_t TaskHandlerSoundAlert;
 
 void setup()
 {
@@ -30,43 +26,74 @@ void setup()
     // define o pino relativo ao LED interno
     pinMode(LED_BUILTIN, OUTPUT);
 
-    setupOLDE();
+    setupOLED();
     setupOneWire();
     setupWifi();
     setupDateTime();
 
-    // xTaskCreate(
-    //     HandlerWiFi,        // Função a ser chamada
-    //     "Handler WiFi",     // Nome da tarefa
-    //     1000,               // Tamanho (bytes)
-    //     NULL,               // Parametro a ser passado
-    //     3,                  // Prioridade da Tarefa
-    //     &TaskHandlerWiFi    // Task handle
-    // );
+    Serial.println("\nCreating WiFi Handler");
+    xTaskCreate(
+        HandlerWiFi,        // Função a ser chamada
+        "WiFi Handler",     // Nome da tarefa
+        1000,              // Tamanho (bytes) 1000
+        NULL,               // Parametro a ser passado
+        0,                  // Prioridade da Tarefa 0
+        &TaskHandlerWiFi    // Task handle
+    );
+    Serial.println("WiFi Handler Created");
+    delay(500);
 
-    // xTaskCreate(
-    //     HandlerTemperature,     // Função a ser chamada
-    //     "Temperature Handler ", // Nome da tarefa
-    //     1000,                   // Tamanho (bytes)
-    //     NULL,                   // Parametro a ser passado
-    //     2,                      // Prioridade da Tarefa
-    //     &TaskHandlerTemperature // Task handle
-    // );
+    Serial.println("\nCreating Temperature Handler");
+    xTaskCreatePinnedToCore(
+        HandlerTemperature,         // Função a ser chamada
+        "Temperature Handler",      // Nome da tarefa
+        10000,                      // Tamanho (bytes) 10000
+        NULL,                       // Parametro a ser passado
+        10,                         // Prioridade da Tarefa 10
+        &TaskHandlerTemperature,    // Task handle
+        1
+    );
+    Serial.println("Temperature Handler Created");
+    delay(500);
 
-    // xTaskCreate(
-    //     HandlerPost,        // Função a ser chamada
-    //     "Handler Post API", // Nome da tarefa
-    //     10000,              // Tamanho (bytes)
-    //     NULL,               // Parametro a ser passado
-    //     4,                  // Prioridade da Tarefa
-    //     &TaskHandlerPost    // Task handle
-    // );
+    Serial.println("\nCreating Display Handler");
+    xTaskCreatePinnedToCore(
+        HandlerDisplay,         // Função a ser chamada
+        "Display Handler",      // Nome da tarefa
+        50000,                   // Tamanho (bytes)
+        NULL,                   // Parametro a ser passado
+        20,                      // Prioridade da Tarefa
+        &TaskHandlerDisplay,    // Task handle
+        1
+    );
+    Serial.println("Display Handler Created");
+    delay(500);
+    
+    Serial.println("\nCreating Sound Alert Handler");
+    xTaskCreate(
+        HandlerSoundAlert,     // Função a ser chamada
+        "Sound Alert Handler",  // Nome da tarefa
+        1000,               // Tamanho (bytes)
+        NULL,               // Parametro a ser passado
+        1,                  // Prioridade da Tarefa
+        &TaskHandlerSoundAlert // Task handle
+    );
+    Serial.println("Display Sound Alert Created");
+    delay(500);
 
+    Serial.println("\nCreating Post API Handler");
+    xTaskCreate(
+        HandlerPost,        // Função a ser chamada
+        "Post API Handler", // Nome da tarefa
+        10000,              // Tamanho (bytes)
+        NULL,               // Parametro a ser passado
+        4,                  // Prioridade da Tarefa
+        &TaskHandlerPost    // Task handle
+    );
+    Serial.println("Post API Handler Created");
+    delay(500);
 }
 
 void loop()
 {
-    unsigned short int ldr_status = digitalRead(LDR_Sensor); // Read LDR sensor status
-    // displayTemp(StorageTemp, AmbientTemp);
-    sound_alert(ldr_status);
 }
