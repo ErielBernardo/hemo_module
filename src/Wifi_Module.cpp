@@ -25,7 +25,6 @@ String translateEncryptionType(wifi_auth_mode_t encryptionType)
 
 void scanNetworks()
 {
-
     int numberOfNetworks = WiFi.scanNetworks();
 
     Serial.print("Number of networks found: ");
@@ -33,7 +32,6 @@ void scanNetworks()
 
     for (int i = 0; i < numberOfNetworks; i++)
     {
-
         Serial.print("Network name: ");
         Serial.println(WiFi.SSID(i));
 
@@ -56,11 +54,23 @@ void connectToNetwork()
 
     while (WiFi.status() != WL_CONNECTED)
     {
-        delay(1000);
+        digitalWrite(LED_BUILTIN, LOW); // turn the LED off
         Serial.println("Establishing connection to WiFi..");
+        delay(500);
     }
+    digitalWrite(LED_BUILTIN, HIGH); // turn the LED on
 
     Serial.println("Connected to network");
+}
+
+void checkNetwork()
+{
+    //Check WiFi connection status
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        Serial.println("WiFi Disconnected");
+        connectToNetwork();
+    }
 }
 
 void setupWifi()

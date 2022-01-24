@@ -2,12 +2,19 @@
 
 String serverName = SERVERNAME;
 
-void insert_temp(float temp)
+unsigned long lastTimeLight = 0;
+unsigned long lastTimeAlertOn = 0;
+unsigned long lastTimeAlertOff = 0;
+
+unsigned short int buzzer_state = LOW;
+
+void insert_temp(float storage_temp, int ldr)
 {
 
     HTTPClient http;
 
-    String serverPath = serverName + "Insert_TEMP/?temp=" + String(temp) + "&mod_id=" + String(MOD_ID) + "&timestamp=" + DateTime.toString(); // Endpoint + data for input in db
+    String serverPath = serverName + "Insert_TEMP/?storage_temp=" + String(storage_temp) + "&ldr=" + String(ldr);
+    serverPath = serverPath + "&mod_id=" + String(MOD_ID) + "&timestamp=" + DateTime.toString();
     serverPath.replace(" ", "%20");
     Serial.print("serverPath = ");
     Serial.println(serverPath);
@@ -35,8 +42,55 @@ void insert_temp(float temp)
 
     if (httpResponseCode > 0)
     {
-        Serial.print("HTTP Response code: ");
+        String payload = http.getString();
+        Serial.println(payload);
+    }
+    else
+    {
+        Serial.print("Error code: ");
         Serial.println(httpResponseCode);
+    }
+    // Free resources
+    http.end();
+}
+
+
+
+void insert_temp_test(float storage_temp, float ambient_temp, int ldr)
+{
+
+    HTTPClient http;
+
+    // Endpoint + data for input in db
+    String serverPath = serverName + "Insert_TEMP_TEST/?ambient_temp=" + String(ambient_temp) + "&storage_temp=" + String(storage_temp);
+    serverPath = serverPath + "&mod_id=" + String(MOD_ID) + "&ldr=" + String(ldr) + "&timestamp=" + DateTime.toString();
+    serverPath.replace(" ", "%20");
+    Serial.print("serverPath = ");
+    Serial.println(serverPath);
+
+    // Your Domain name with URL path or IP address with path
+    http.begin(serverPath);
+
+    // Specify content-type header
+    http.addHeader("Accept", "*/*");
+    //http.addHeader("accept", "application/json");
+    //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    //http.addHeader("Accept-Encoding", "gzip, deflate, br");
+    //http.addHeader("Content-Type", "application/json");
+
+    // Data to send with HTTP POST
+    //  String httpRequestData = "temp=" + String(temp) + "&mod_id=" + String(mod_id);
+    //  Serial.print("httpRequestData = ");
+    //  Serial.println(httpRequestData);
+
+    // Send HTTP POST request
+    int httpResponseCode = http.POST("");
+
+    Serial.print("HTTP POST RESP: ");
+    Serial.println(httpResponseCode);
+
+    if (httpResponseCode > 0)
+    {
         String payload = http.getString();
         Serial.println(payload);
     }
@@ -85,6 +139,57 @@ void get_mod_temps(int mod_id)
 
 void sound_alert(int ldr_status)
 {
+    unsigned long millis_var = millis();
+    if (ldr_status == HIGH)
+    {
+        // Serial.println("Nao há luz. Porta fechada");
+        buzzer_state = LOW; //turn buzzer off
+    }
+    else
+    {
+        if ((buzzer_state == LOW) && ((millis_var - lastTimeAlertOff) > longPeriodAlert))
+        {
+            buzzer_state = HIGH; // Turn buzzer on
+            lastTimeAlertOn = millis_var;
+            Serial.println("Buzzer ON at  " + String(millis_var) + " Tempo desligado " + String(millis_var - lastTimeAlertOff));
+        }
+        else if ((buzzer_state == HIGH) && ((millis_var - lastTimeAlertOn) > shortPeriodAlert))
+        {
+            buzzer_state = LOW; // Turn buzzer off
+            lastTimeAlertOff = millis_var;
+            Serial.println("Buzzer OFF at " + String(millis_var) + " Tempo ligado    " + String(millis_var - lastTimeAlertOn));
+        }
+    }
+    digitalWrite(Buzzer, buzzer_state);
+}
+
+void sound_alert_test(int ldr_status, float storage_temp)
+{
+    unsigned long millis_var = millis();
+    if (ldr_status == HIGH && (storage_temp > BULLET_TEMP))
+    {
+        buzzer_state = LOW; //turn buzzer off
+    }
+    else
+    {
+        if ((buzzer_state == LOW) && ((millis_var - lastTimeAlertOff) > longPeriodAlert))
+        {
+            buzzer_state = HIGH; // Turn buzzer on
+            lastTimeAlertOn = millis_var;
+            Serial.println("Buzzer ON at  " + String(millis_var) + " Tempo desligado " + String(millis_var - lastTimeAlertOff));
+        }
+        else if ((buzzer_state == HIGH) && ((millis_var - lastTimeAlertOn) > shortPeriodAlert))
+        {
+            buzzer_state = LOW; // Turn buzzer off
+            lastTimeAlertOff = millis_var;
+            Serial.println("Buzzer OFF at " + String(millis_var) + " Tempo ligado    " + String(millis_var - lastTimeAlertOn));
+        }
+    }
+    digitalWrite(Buzzer, buzzer_state);
+}
+
+void sound_alert_OLD(int ldr_status)
+{
     if (ldr_status == HIGH)
     {
         Serial.println("Nao há luz. Porta fechada");
@@ -98,4 +203,9 @@ void sound_alert(int ldr_status)
         delay(500);
         digitalWrite(Buzzer, LOW); //turn buzzer off
     }
+}
+
+void Handler(void *pvParameters)
+{
+
 }

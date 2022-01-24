@@ -8,6 +8,7 @@
 String translateEncryptionType(wifi_auth_mode_t encryptionType);
 void scanNetworks();
 void connectToNetwork();
+void checkNetwork();
 void setupWifi();
 
 #endif

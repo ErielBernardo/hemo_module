@@ -1,23 +1,26 @@
 #include "DS18B_Sensor.hpp"
 
 // Setup a oneWire instance to communicate with any OneWire devices
-OneWire oneWireAT(oneWireBusAT);
+OneWire oneWireAmbient(oneWireBusAmbient);
 // Pass our oneWire reference to Dallas Temperature sensor
-DallasTemperature sensorsAT(&oneWireAT);
+DallasTemperature AmbientSensor(&oneWireAmbient);
 
 // Setup a oneWire instance to communicate with any OneWire devices
-OneWire oneWire(oneWireBus);
+OneWire oneWireStorage(oneWireBusStorage);
 // Pass our oneWire reference to Dallas Temperature sensor
-DallasTemperature sensors(&oneWire);
+DallasTemperature StorageSensors(&oneWireStorage);
 // Number of temperature devices found
-const int nSensors = int(sensors.getDeviceCount());
+const int nSensors = int(StorageSensors.getDeviceCount());
 DeviceAddress sensors_addr[2];
+
+float StorageTemp = getTemp(StorageSensors);
+float AmbientTemp = getTemp(AmbientSensor);
 
 void setupOneWire()
 {
     // Start the DS18B20 sensor
-    sensors.begin();
-    sensorsAT.begin();
+    StorageSensors.begin();
+    AmbientSensor.begin();
 
     Serial.print("nSensors = ");
     Serial.println(nSensors);
@@ -26,11 +29,11 @@ void setupOneWire()
     // Loop through each device, print out address
     for (int j = 0; j < nSensors; j++)
     {
-        if (!oneWire.search(addr))
+        if (!oneWireStorage.search(addr))
         {
             Serial.println(" No more addresses.");
             Serial.println();
-            oneWire.reset_search();
+            oneWireStorage.reset_search();
             return;
         }
         Serial.print(" ROM =");
@@ -43,14 +46,6 @@ void setupOneWire()
 }
 
 float getTemp(DallasTemperature sensors)
-{
-    sensors.requestTemperatures();
-    float temperatureC = sensors.getTempCByIndex(0);
-
-    return temperatureC;
-}
-
-float getTempOLD()
 {
     sensors.requestTemperatures();
     float temperatureC = sensors.getTempCByIndex(0);

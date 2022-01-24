@@ -6,8 +6,10 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-extern DallasTemperature sensorsAT;
-extern DallasTemperature sensors;
+extern DallasTemperature AmbientSensor;
+extern DallasTemperature StorageSensors;
+extern float StorageTemp;
+extern float AmbientTemp;
 
 void setupOneWire();
 float getTemp(DallasTemperature sensors);

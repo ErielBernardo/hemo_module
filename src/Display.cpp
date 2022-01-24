@@ -21,7 +21,7 @@ void setupOLDE()
     display.display();
 }
 
-void displayTemp(float TempCamara, float TempAT, int mod_id)
+void displayTemp(float storage_temp, float ambient_temp)
 {
     DateTimeParts p = DateTime.getParts();
     char Time[50];
@@ -30,13 +30,13 @@ void displayTemp(float TempCamara, float TempAT, int mod_id)
     display.setCursor(0, 0);
     display.setTextSize(2);
     display.println(Time);
-    display.print(String(TempCamara) + "C");
+    display.print(String(storage_temp) + "C");
     display.setTextSize(1);
     display.println(" Camara\n");
     display.setTextSize(2);
-    display.print(String(TempAT) + "C");
+    display.print(String(ambient_temp) + "C");
     display.setTextSize(1);
     display.println(" Ambiente\n");
-    display.println("MOD " + String(mod_id));
+    display.println("MOD " + String(MOD_ID));
     display.display();
 }

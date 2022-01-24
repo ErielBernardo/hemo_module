@@ -11,10 +11,16 @@
 #define SSID_CONN "Bunker"
 #define PASSWORD_CONN "dosestudos"
 
+// Temperatura alvo
+#define BULLET_TEMP 5 // em °C
+
 // Set timer values
 #define timerDelay 10000
-#define timerDelayPost 60000
+#define timerDelayPost 10000
 #define timerDelayLight 5000
+
+#define shortPeriodAlert 50
+#define longPeriodAlert 2000
 
 // Timezone for DateTime library
 #define TZ "<+03>-3" // GMT-3

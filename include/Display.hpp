@@ -2,6 +2,7 @@
 #define _CONFIG_DISPLAY_HPP_
 
 #include "config_pins.hpp"
+#include "config_mod_defines.hpp"
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -17,6 +18,6 @@
 #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 
 void setupOLDE();
-void displayTemp(float TempCamara, float TempAT, int mod_id);
+void displayTemp(float storage_temp, float ambient_temp);
 
 #endif

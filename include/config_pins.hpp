@@ -3,9 +3,9 @@
 #define _CONFIG_PINS_HPP_
 
 // GPIO where the DS18B20 is connected to (14)
-#define oneWireBus 14
+#define oneWireBusStorage 14
 // GPIO where the DS18B20 is connected to (32)
-#define oneWireBusAT 32
+#define oneWireBusAmbient 32
 // GPIO where the LDR is connected to
 #define ldr_sensor 26
 // GPIO where the Rele is connected to
