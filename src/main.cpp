@@ -13,6 +13,10 @@
 unsigned long lastTime = 0;
 unsigned long lastTimePost = 0;
 
+TaskHandle_t TaskHandlerTemperature;
+TaskHandle_t TaskHandlerWiFi;
+TaskHandle_t TaskHandlerPost;
+
 void setup()
 {
     // Start the Serial Monitor
@@ -22,7 +26,7 @@ void setup()
     // define o pino relativo ao Rele de saida
     pinMode(Rele, OUTPUT);
     // define o pino relativo ao sensor como entrada digital
-    pinMode(ldr_sensor, INPUT);
+    pinMode(LDR_Sensor, INPUT);
     // define o pino relativo ao LED interno
     pinMode(LED_BUILTIN, OUTPUT);
 
@@ -30,28 +34,39 @@ void setup()
     setupOneWire();
     setupWifi();
     setupDateTime();
+
+    // xTaskCreate(
+    //     HandlerWiFi,        // Função a ser chamada
+    //     "Handler WiFi",     // Nome da tarefa
+    //     1000,               // Tamanho (bytes)
+    //     NULL,               // Parametro a ser passado
+    //     3,                  // Prioridade da Tarefa
+    //     &TaskHandlerWiFi    // Task handle
+    // );
+
+    // xTaskCreate(
+    //     HandlerTemperature,     // Função a ser chamada
+    //     "Temperature Handler ", // Nome da tarefa
+    //     1000,                   // Tamanho (bytes)
+    //     NULL,                   // Parametro a ser passado
+    //     2,                      // Prioridade da Tarefa
+    //     &TaskHandlerTemperature // Task handle
+    // );
+
+    // xTaskCreate(
+    //     HandlerPost,        // Função a ser chamada
+    //     "Handler Post API", // Nome da tarefa
+    //     10000,              // Tamanho (bytes)
+    //     NULL,               // Parametro a ser passado
+    //     4,                  // Prioridade da Tarefa
+    //     &TaskHandlerPost    // Task handle
+    // );
+
 }
 
 void loop()
 {
-    //Check WiFi connection status
-    checkNetwork();
-
-    unsigned short int ldr_status = digitalRead(ldr_sensor); // Read LDR sensor status
-
-    // Get temperature from DS18B sensor status and display celsius
-    StorageTemp = getTemp(StorageSensors);
-    AmbientTemp = getTemp(AmbientSensor);
-
-    displayTemp(StorageTemp, AmbientTemp);
+    unsigned short int ldr_status = digitalRead(LDR_Sensor); // Read LDR sensor status
+    // displayTemp(StorageTemp, AmbientTemp);
     sound_alert(ldr_status);
-
-    unsigned long millis_var = millis();
-    // Send an HTTP POST request every timerDelayPost minutes
-    if ((millis_var - lastTimePost) > timerDelayPost)
-    {
-        insert_temp(StorageTemp, ldr_status);
-        // insert_temp_test(StorageTemp, AmbientTemp, ldr_status); // Post de testes
-        lastTimePost = millis();
-    }
 }

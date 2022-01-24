@@ -4,6 +4,8 @@
 #include "config_mod_defines.hpp"
 #include "config_pins.hpp"
 #include "DateTime.hpp"
+#include "DS18B_Sensor.hpp"
+#include "Wifi_Module.hpp"
 
 #include <HTTPClient.h>
 
@@ -14,5 +16,9 @@ void get_mod_temps(int mod_id);
 
 void sound_alert(int ldr_status);
 void sound_alert_OLD(int ldr_status);
+
+void HandlerTemperature(void *pvParameters);
+void HandlerWiFi(void *pvParameters);
+void HandlerPost(void *pvParameters);
 
 #endif

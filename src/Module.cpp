@@ -54,8 +54,6 @@ void insert_temp(float storage_temp, int ldr)
     http.end();
 }
 
-
-
 void insert_temp_test(float storage_temp, float ambient_temp, int ldr)
 {
 
@@ -205,7 +203,32 @@ void sound_alert_OLD(int ldr_status)
     }
 }
 
-void Handler(void *pvParameters)
+void HandlerTemperature(void *pvParameters)
 {
+    for (;;)
+    { // Loop infinito
+        // Get temperature from DS18B sensor status and display celsius
+        StorageTemp = getTemp(StorageSensors);
+        AmbientTemp = getTemp(AmbientSensor);
+    }
+}
 
+void HandlerWiFi(void *pvParameters)
+{
+    for (;;)
+    { // Loop infinito
+        //Check WiFi connection status
+        checkNetwork();
+    }
+}
+
+void HandlerPost(void *pvParameters)
+{
+    for (;;)
+    { // Loop infinito
+        // Send an HTTP POST request every timerDelayPost minutes
+        insert_temp(StorageTemp, digitalRead(LDR_Sensor));
+        // insert_temp_test(StorageTemp, AmbientTemp, ldr_status); // Post de testes
+        delay(timerDelayPost);
+    }
 }
