@@ -26,7 +26,7 @@ void displayTemp()
     DateTimeParts p = DateTime.getParts();
     char Time[50];
     sprintf(Time, "%02d:%02d:%02d", p.getHours(), p.getMinutes(), p.getSeconds());
-    
+
     display.clearDisplay();
     display.setCursor(0, 0);
     display.setTextSize(2);
@@ -39,6 +39,18 @@ void displayTemp()
     display.setTextSize(1);
     display.println(" Ambient\n");
     display.println("MOD " + String(MOD_ID));
+    switch (digitalRead(LDR_Sensor))
+    {
+    case (LOW):
+        display.println("PORTA ABERTA");
+        break;
+    case (HIGH):
+        display.println("PORTA FECHADA");
+        break;
+    default:
+        display.println("PORTA INDEFINIDA");
+        break;
+    }
     display.display();
 
     // Serial.println("StorageTemp " + String(StorageTemp) + "°C - AmbientSensor " + String(AmbientTemp) + "°C");

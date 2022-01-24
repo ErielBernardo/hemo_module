@@ -54,16 +54,15 @@ void insert_temp(float storage_temp, int ldr)
     http.end();
 }
 
-void insert_temp_test(float storage_temp, float ambient_temp, int ldr)
+void insert_temp_test(int ldr)
 {
-
     HTTPClient http;
 
     // Endpoint + data for input in db
-    String serverPath = serverName + "Insert_TEMP_TEST/?ambient_temp=" + String(ambient_temp) + "&storage_temp=" + String(storage_temp);
+    String serverPath = serverName + "Insert_TEMP_TEST/?ambient_temp=" + String(AmbientTemp) + "&storage_temp=" + String(StorageTemp);
     serverPath = serverPath + "&mod_id=" + String(MOD_ID) + "&ldr=" + String(ldr) + "&timestamp=" + DateTime.toString();
     serverPath.replace(" ", "%20");
-    Serial.print("serverPath = ");
+    Serial.print("\nposting = ");
     Serial.println(serverPath);
 
     // Your Domain name with URL path or IP address with path
@@ -83,20 +82,18 @@ void insert_temp_test(float storage_temp, float ambient_temp, int ldr)
 
     // Send HTTP POST request
     int httpResponseCode = http.POST("");
-
-    Serial.print("HTTP POST RESP: ");
-    Serial.println(httpResponseCode);
-
     if (httpResponseCode > 0)
     {
-        String payload = http.getString();
-        Serial.println(payload);
+        // String payload = http.getString();
+        // Serial.println(payload);
+        Serial.print("HTTP POST RESP: ");
     }
     else
     {
         Serial.print("Error code: ");
-        Serial.println(httpResponseCode);
     }
+    Serial.println(httpResponseCode);
+
     // Free resources
     http.end();
 }
@@ -141,7 +138,7 @@ void sound_alert(int ldr_status)
     if (ldr_status == HIGH)
     {
         // Serial.println("Nao há luz. Porta fechada");
-        buzzer_state = LOW; //turn buzzer off
+        buzzer_state = LOW; // Turn buzzer off
     }
     else
     {
@@ -166,7 +163,7 @@ void sound_alert_test(int ldr_status)
     unsigned long millis_var = millis();
     if (ldr_status == HIGH && (StorageTemp > BULLET_TEMP))
     {
-        buzzer_state = LOW; //turn buzzer off
+        buzzer_state = LOW; // Turn buzzer off
     }
     else
     {
@@ -222,7 +219,7 @@ void HandlerPost(void *pvParameters)
     { // Loop infinito
         // Send an HTTP POST request every timerDelayPost minutes
         // insert_temp(StorageTemp, digitalRead(LDR_Sensor));
-        // insert_temp_test(StorageTemp, AmbientTemp, digitalRead(LDR_Sensor)); // Post de testes
+        insert_temp_test(digitalRead(LDR_Sensor)); // Post de testes
         vTaskDelay(taskPeriodPostAPI / portTICK_PERIOD_MS);
     }
 }
@@ -231,8 +228,8 @@ void HandlerSoundAlert(void *pvParameters)
 {
     for (;;)
     { // Loop infinito
-        // sound_alert(digitalRead(LDR_Sensor));
-        sound_alert_test(digitalRead(LDR_Sensor));
+        sound_alert(digitalRead(LDR_Sensor));
+        // sound_alert_test(digitalRead(LDR_Sensor));
         vTaskDelay(taskPeriodSoundAlert / portTICK_PERIOD_MS);
     }
 }

@@ -2,7 +2,7 @@
 #define _CONFIG_MOD_DEFINES_HPP_
 
 // Module id
-#define MOD_ID 0
+#define MOD_ID 666
 
 //Your Domain name with URL path or IP address with path
 #define SERVERNAME "https://fastapi-tcc.herokuapp.com/"
@@ -24,9 +24,9 @@
 
 #define taskPeriodWifi 120000
 #define taskPeriodTemperature 1000
-#define taskPeriodDisplay 500
+#define taskPeriodDisplay 250
 #define taskPeriodSoundAlert 100
-#define taskPeriodPostAPI 10000
+#define taskPeriodPostAPI 60000
 
 // Timezone for DateTime library
 #define TZ "<+03>-3" // GMT-3

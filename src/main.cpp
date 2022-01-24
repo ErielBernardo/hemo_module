@@ -41,8 +41,8 @@ void setup()
         &TaskHandlerWiFi    // Task handle
     );
     Serial.println("WiFi Handler Created");
+    
     delay(500);
-
     Serial.println("\nCreating Temperature Handler");
     xTaskCreatePinnedToCore(
         HandlerTemperature,         // Função a ser chamada
@@ -54,8 +54,8 @@ void setup()
         1
     );
     Serial.println("Temperature Handler Created");
+    
     delay(500);
-
     Serial.println("\nCreating Display Handler");
     xTaskCreatePinnedToCore(
         HandlerDisplay,         // Função a ser chamada
@@ -67,8 +67,8 @@ void setup()
         1
     );
     Serial.println("Display Handler Created");
-    delay(500);
     
+    delay(500);
     Serial.println("\nCreating Sound Alert Handler");
     xTaskCreate(
         HandlerSoundAlert,     // Função a ser chamada
@@ -79,8 +79,8 @@ void setup()
         &TaskHandlerSoundAlert // Task handle
     );
     Serial.println("Display Sound Alert Created");
-    delay(500);
 
+    delay(5000);
     Serial.println("\nCreating Post API Handler");
     xTaskCreate(
         HandlerPost,        // Função a ser chamada
@@ -91,7 +91,6 @@ void setup()
         &TaskHandlerPost    // Task handle
     );
     Serial.println("Post API Handler Created");
-    delay(500);
 }
 
 void loop()

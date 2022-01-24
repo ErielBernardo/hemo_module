@@ -11,7 +11,7 @@
 #include <HTTPClient.h>
 
 void insert_temp(float storage_temp, int ldr);
-void insert_temp_test(float storage_temp, float ambient_temp, int ldr);
+void insert_temp_test(int ldr);
 
 void get_mod_temps(int mod_id);
 
