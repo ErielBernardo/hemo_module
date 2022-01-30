@@ -13,5 +13,6 @@ extern float AmbientTemp;
 
 void setupOneWire();
 float getTemp(DallasTemperature sensors);
+void updateTemps();
 
 #endif

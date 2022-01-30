@@ -3,6 +3,9 @@
 
 #include "config_pins.hpp"
 #include "config_mod_defines.hpp"
+#include "DS18B_Sensor.hpp"
+#include "Module.hpp"
+
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -17,7 +20,8 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 
-void setupOLDE();
-void displayTemp(float storage_temp, float ambient_temp);
+void setupOLED();
+void displayTemp();
+void displayTempDEBUG();
 
 #endif
