@@ -32,64 +32,65 @@ void setup()
     setupDateTime();
 
     Serial.println("\nCreating WiFi Handler");
-    xTaskCreate(
-        HandlerWiFi,        // Função a ser chamada
-        "WiFi Handler",     // Nome da tarefa
-        1000,              // Tamanho (bytes) 1000
-        NULL,               // Parametro a ser passado
-        0,                  // Prioridade da Tarefa 0
-        &TaskHandlerWiFi    // Task handle
+    xTaskCreatePinnedToCore(
+        HandlerWiFi,      // Função a ser chamada
+        "WiFi Handler",   // Nome da tarefa
+        1000,             // Tamanho (bytes) 1000
+        NULL,             // Parametro a ser passado
+        0,                // Prioridade da Tarefa 0
+        &TaskHandlerWiFi, // Task handle
+        0                 // Core
     );
     Serial.println("WiFi Handler Created");
-    
+
     delay(500);
     Serial.println("\nCreating Temperature Handler");
     xTaskCreatePinnedToCore(
-        HandlerTemperature,         // Função a ser chamada
-        "Temperature Handler",      // Nome da tarefa
-        10000,                      // Tamanho (bytes) 10000
-        NULL,                       // Parametro a ser passado
-        10,                         // Prioridade da Tarefa 10
-        &TaskHandlerTemperature,    // Task handle
-        1
+        HandlerTemperature,      // Função a ser chamada
+        "Temperature Handler",   // Nome da tarefa
+        10000,                   // Tamanho (bytes) 10000
+        NULL,                    // Parametro a ser passado
+        10,                      // Prioridade da Tarefa 10
+        &TaskHandlerTemperature, // Task handle
+        1                        // Core
     );
     Serial.println("Temperature Handler Created");
-    
+
     delay(500);
     Serial.println("\nCreating Display Handler");
     xTaskCreatePinnedToCore(
-        HandlerDisplay,         // Função a ser chamada
-        "Display Handler",      // Nome da tarefa
-        50000,                   // Tamanho (bytes)
-        NULL,                   // Parametro a ser passado
-        20,                      // Prioridade da Tarefa
-        &TaskHandlerDisplay,    // Task handle
-        1
+        HandlerDisplay,      // Função a ser chamada
+        "Display Handler",   // Nome da tarefa
+        50000,               // Tamanho (bytes)
+        NULL,                // Parametro a ser passado
+        20,                  // Prioridade da Tarefa
+        &TaskHandlerDisplay, // Task handle
+        1                    // Core
     );
     Serial.println("Display Handler Created");
-    
+
     delay(500);
     Serial.println("\nCreating Sound Alert Handler");
-    xTaskCreate(
-        HandlerSoundAlert,     // Função a ser chamada
+    xTaskCreatePinnedToCore(
+        HandlerSoundAlert,      // Função a ser chamada
         "Sound Alert Handler",  // Nome da tarefa
-        1000,               // Tamanho (bytes)
-        NULL,               // Parametro a ser passado
-        1,                  // Prioridade da Tarefa
-        &TaskHandlerSoundAlert // Task handle
-    );
+        1000,                   // Tamanho (bytes)
+        NULL,                   // Parametro a ser passado
+        1,                      // Prioridade da Tarefa
+        &TaskHandlerSoundAlert, // Task handle
+        0);
     Serial.println("Display Sound Alert Created");
 
     delay(5000);
     Serial.println("\nCreating Post API Handler");
-    xTaskCreate(
-        HandlerPost,        // Função a ser chamada
+    xTaskCreatePinnedToCore(
+        HandlerPostMulti,   // Função a ser chamada
         "Post API Handler", // Nome da tarefa
         10000,              // Tamanho (bytes)
         NULL,               // Parametro a ser passado
         4,                  // Prioridade da Tarefa
-        &TaskHandlerPost    // Task handle
-    );
+        &TaskHandlerPost,   // Task handle
+        1);
     Serial.println("Post API Handler Created");
 }
 

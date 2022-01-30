@@ -1,6 +1,9 @@
 #ifndef _MODULE_HPP_
 #define _MODULE_HPP_
 
+#include <HTTPClient.h>
+// #include <ArduinoJson.h>
+
 #include "config_pins.hpp"
 #include "config_mod_defines.hpp"
 #include "DateTime.hpp"
@@ -8,10 +11,9 @@
 #include "Wifi_Module.hpp"
 #include "Display.hpp"
 
-#include <HTTPClient.h>
-
 void insert_temp(float storage_temp, int ldr);
 void insert_temp_test(int ldr);
+void insert_temp_multi();
 
 void get_mod_temps(int mod_id);
 
@@ -20,8 +22,12 @@ void sound_alert_test(int ldr_status);
 
 void HandlerTemperature(void *pvParameters);
 void HandlerWiFi(void *pvParameters);
-void HandlerPost(void *pvParameters);
 void HandlerDisplay(void *pvParameters);
 void HandlerSoundAlert(void *pvParameters);
+
+struct ModuleDataPost;
+String serializeModuleDataPostBuffer(ModuleDataPost ModuleDataPostBuffer[]);
+void HandlerPost(void *pvParameters);
+void HandlerPostMulti(void *pvParameters);
 
 #endif

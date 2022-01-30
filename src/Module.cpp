@@ -8,6 +8,19 @@ unsigned long lastTimeAlertOff = 0;
 
 unsigned short int buzzer_state = LOW;
 
+unsigned short int delayRead = int(taskPeriodPostAPI / rateReadPeriod);
+
+struct ModuleDataPost
+{
+    float AmbientTemperature = -127;
+    float StorageTemperature = -127;
+    short int LDRStatus = -1;
+    short int ModuleID = MOD_ID;
+    String Timestamp = "";
+};
+
+ModuleDataPost ModuleDataPostBuffer[rateReadPeriod];
+
 void insert_temp(float storage_temp, int ldr)
 {
 
@@ -86,6 +99,45 @@ void insert_temp_test(int ldr)
     {
         // String payload = http.getString();
         // Serial.println(payload);
+        Serial.print("HTTP POST RESP: ");
+    }
+    else
+    {
+        Serial.print("Error code: ");
+    }
+    Serial.println(httpResponseCode);
+
+    // Free resources
+    http.end();
+}
+// TODO Desenvolver
+void insert_temp_multi()
+{
+    HTTPClient http;
+
+    // Endpoint + data for input in db
+    String serverPath = serverName + "Insert_MULTI_TEMP/?teste=" + String(TESTE);
+    Serial.println("\nposting :");
+    Serial.println(serverPath);
+
+    // Your Domain name with URL path or IP address with path
+    http.begin(serverPath);
+
+    // Specify content-type header
+    http.addHeader("accept", "application/json");
+    http.addHeader("Content-Type", "application/json");
+
+    // Data to send with HTTP POST
+    String httpRequestData = serializeModuleDataPostBuffer(ModuleDataPostBuffer);
+    Serial.println("httpRequestData:");
+    Serial.println(httpRequestData);
+
+    // Send HTTP POST request
+    int httpResponseCode = http.POST(httpRequestData);
+    if (httpResponseCode > 0)
+    {
+        String payload = http.getString();
+        Serial.println(payload);
         Serial.print("HTTP POST RESP: ");
     }
     else
@@ -199,6 +251,14 @@ void HandlerTemperature(void *pvParameters)
     { // Loop infinito
         // Get temperature from DS18B sensors status
         updateTemps();
+        if (StorageTemp < BULLET_TEMP){
+            Serial.println(String(StorageTemp)+ " Turn off rele");
+            digitalWrite(Rele, LOW); // Turn off rele
+        }
+        else if(StorageTemp < BULLET_TEMP+1){
+            Serial.println(String(StorageTemp)+ " Turn on rele");
+            digitalWrite(Rele, HIGH); // Turn on rele
+        }
         vTaskDelay(taskPeriodTemperature / portTICK_PERIOD_MS);
     }
 }
@@ -224,6 +284,26 @@ void HandlerPost(void *pvParameters)
     }
 }
 
+void HandlerPostMulti(void *pvParameters)
+{
+    for (;;)
+    { // Loop infinito
+        for (int i = 0; i < rateReadPeriod; i++)
+        {
+            String Timestamp = DateTime.toString();
+            // Timestamp.replace(" ", "%20");
+            ModuleDataPostBuffer[i].AmbientTemperature = AmbientTemp;
+            ModuleDataPostBuffer[i].StorageTemperature = StorageTemp;
+            ModuleDataPostBuffer[i].Timestamp = Timestamp;
+            ModuleDataPostBuffer[i].LDRStatus = digitalRead(LDR_Sensor);
+            vTaskDelay(delayRead / portTICK_PERIOD_MS);
+        }
+        unsigned long millisvar = millis();
+        insert_temp_multi(); // Post de testes
+        Serial.println("Posting time " + String(millis() - millisvar) + " ms");
+    }
+}
+
 void HandlerSoundAlert(void *pvParameters)
 {
     for (;;)
@@ -232,4 +312,28 @@ void HandlerSoundAlert(void *pvParameters)
         // sound_alert_test(digitalRead(LDR_Sensor));
         vTaskDelay(taskPeriodSoundAlert / portTICK_PERIOD_MS);
     }
+}
+
+String serializeModuleDataPostBuffer(ModuleDataPost ModuleDataPostBuffer[])
+{
+    unsigned long millisvar = millis();
+    String postStringSerialize = "[";
+    for (int i = 0; i < rateReadPeriod; i++)
+    {
+        postStringSerialize = postStringSerialize + "{\"AmbientTemperature\": " + String(ModuleDataPostBuffer[i].AmbientTemperature) + ",";
+        postStringSerialize = postStringSerialize + "\"StorageTemperature\": " + String(ModuleDataPostBuffer[i].StorageTemperature) + ",";
+        postStringSerialize = postStringSerialize + "\"LDRStatus\": " + String(ModuleDataPostBuffer[i].LDRStatus) + ",";
+        postStringSerialize = postStringSerialize + "\"ModuleID\": " + String(ModuleDataPostBuffer[i].ModuleID) + ",";
+        postStringSerialize = postStringSerialize + "\"Timestamp\": \"" + ModuleDataPostBuffer[i].Timestamp + "\"}";
+        if (i < (rateReadPeriod - 1))
+        {
+            postStringSerialize = postStringSerialize + ",";
+        }
+        else
+        {
+            postStringSerialize = postStringSerialize + "]";
+        }
+    }
+    Serial.println("Serializing time " + String(millis() - millisvar) + " ms");
+    return postStringSerialize;
 }
