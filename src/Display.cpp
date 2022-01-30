@@ -17,7 +17,7 @@ void setupOLED()
     display.setTextColor(WHITE);
 
     display.setCursor(10, 0);
-    display.println("Hello, world!");
+    display.println("Hellow, world!");
     display.display();
 }
 
@@ -30,25 +30,35 @@ void displayTemp()
     display.clearDisplay();
     display.setCursor(0, 0);
     display.setTextSize(2);
+    display.print(" ");
     display.println(Time);
     display.print(String(StorageTemp) + "C");
     display.setTextSize(1);
-    display.println(" Storage\n");
+    display.println("  Storage\n");
     display.setTextSize(2);
     display.print(String(AmbientTemp) + "C");
     display.setTextSize(1);
-    display.println(" Ambient\n");
-    display.println("MOD " + String(MOD_ID));
+    display.println("  Ambient\n");
+    display.print("MOD " + String(MOD_ID));
+    switch (rele_state)
+    {
+    case (LOW):
+        display.println("         R OFF");
+        break;
+    case (HIGH):
+        display.println("         R  ON");
+        break;
+    }
     switch (digitalRead(LDR_Sensor))
     {
     case (LOW):
-        display.println("PORTA ABERTA");
+        display.println("     PORTA ABERTA");
         break;
     case (HIGH):
-        display.println("PORTA FECHADA");
+        display.println("     PORTA FECHADA");
         break;
     default:
-        display.println("PORTA INDEFINIDA");
+        display.println("    PORTA INDEFINIDA");
         break;
     }
     display.display();

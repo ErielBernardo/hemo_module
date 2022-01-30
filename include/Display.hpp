@@ -4,6 +4,8 @@
 #include "config_pins.hpp"
 #include "config_mod_defines.hpp"
 #include "DS18B_Sensor.hpp"
+#include "Module.hpp"
+
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>

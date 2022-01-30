@@ -2,7 +2,7 @@
 #define _CONFIG_MOD_DEFINES_HPP_
 
 // Module id
-#define MOD_ID -1000
+#define MOD_ID 667
 #define TESTE true
 
 // Wifi credentials

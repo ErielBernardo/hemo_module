@@ -11,6 +11,8 @@
 #include "Wifi_Module.hpp"
 #include "Display.hpp"
 
+extern unsigned short int rele_state;
+
 void insert_temp(float storage_temp, int ldr);
 void insert_temp_test(int ldr);
 void insert_temp_multi();
@@ -26,7 +28,7 @@ void HandlerDisplay(void *pvParameters);
 void HandlerSoundAlert(void *pvParameters);
 
 struct ModuleDataPost;
-String serializeModuleDataPostBuffer(ModuleDataPost ModuleDataPostBuffer[]);
+void serializeModuleDataPostBuffer();
 void HandlerPost(void *pvParameters);
 void HandlerPostMulti(void *pvParameters);
 

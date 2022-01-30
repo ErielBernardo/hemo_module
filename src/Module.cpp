@@ -7,6 +7,7 @@ unsigned long lastTimeAlertOn = 0;
 unsigned long lastTimeAlertOff = 0;
 
 unsigned short int buzzer_state = LOW;
+unsigned short int rele_state = LOW;
 
 unsigned short int delayRead = int(taskPeriodPostAPI / rateReadPeriod);
 
@@ -20,6 +21,8 @@ struct ModuleDataPost
 };
 
 ModuleDataPost ModuleDataPostBuffer[rateReadPeriod];
+
+String postStringSerialize = "";
 
 void insert_temp(float storage_temp, int ldr)
 {
@@ -128,16 +131,15 @@ void insert_temp_multi()
     http.addHeader("Content-Type", "application/json");
 
     // Data to send with HTTP POST
-    String httpRequestData = serializeModuleDataPostBuffer(ModuleDataPostBuffer);
+    serializeModuleDataPostBuffer();
     Serial.println("httpRequestData:");
-    Serial.println(httpRequestData);
 
     // Send HTTP POST request
-    int httpResponseCode = http.POST(httpRequestData);
+    int httpResponseCode = http.POST(postStringSerialize);
     if (httpResponseCode > 0)
     {
-        String payload = http.getString();
-        Serial.println(payload);
+        // String payload = http.getString();
+        // Serial.println(payload);
         Serial.print("HTTP POST RESP: ");
     }
     else
@@ -251,14 +253,15 @@ void HandlerTemperature(void *pvParameters)
     { // Loop infinito
         // Get temperature from DS18B sensors status
         updateTemps();
-        if (StorageTemp < BULLET_TEMP){
-            Serial.println(String(StorageTemp)+ " Turn off rele");
-            digitalWrite(Rele, LOW); // Turn off rele
+        if (StorageTemp < BULLET_TEMP)
+        {
+            rele_state = LOW; // Turn off rele
         }
-        else if(StorageTemp < BULLET_TEMP+1){
-            Serial.println(String(StorageTemp)+ " Turn on rele");
-            digitalWrite(Rele, HIGH); // Turn on rele
+        else if (StorageTemp > BULLET_TEMP + 1)
+        {
+            rele_state = HIGH; // Turn on rele
         }
+        digitalWrite(Rele, rele_state); // Turn on rele
         vTaskDelay(taskPeriodTemperature / portTICK_PERIOD_MS);
     }
 }
@@ -314,10 +317,10 @@ void HandlerSoundAlert(void *pvParameters)
     }
 }
 
-String serializeModuleDataPostBuffer(ModuleDataPost ModuleDataPostBuffer[])
+void serializeModuleDataPostBuffer()
 {
     unsigned long millisvar = millis();
-    String postStringSerialize = "[";
+    postStringSerialize = "[";
     for (int i = 0; i < rateReadPeriod; i++)
     {
         postStringSerialize = postStringSerialize + "{\"AmbientTemperature\": " + String(ModuleDataPostBuffer[i].AmbientTemperature) + ",";
@@ -335,5 +338,4 @@ String serializeModuleDataPostBuffer(ModuleDataPost ModuleDataPostBuffer[])
         }
     }
     Serial.println("Serializing time " + String(millis() - millisvar) + " ms");
-    return postStringSerialize;
 }

@@ -21,6 +21,7 @@ void setup()
     pinMode(Buzzer, OUTPUT);
     // define o pino relativo ao Rele de saida
     pinMode(Rele, OUTPUT);
+    digitalWrite(Rele, LOW); // Turn off rele
     // define o pino relativo ao sensor como entrada digital
     pinMode(LDR_Sensor, INPUT);
     // define o pino relativo ao LED interno
