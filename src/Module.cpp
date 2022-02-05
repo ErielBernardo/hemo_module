@@ -16,6 +16,7 @@ struct ModuleDataPost
     float AmbientTemperature = -127;
     float StorageTemperature = -127;
     short int LDRStatus = -1;
+    short int ReleState = -1;
     short int ModuleID = MOD_ID;
     String Timestamp = "";
 };
@@ -299,6 +300,7 @@ void HandlerPostMulti(void *pvParameters)
             ModuleDataPostBuffer[i].StorageTemperature = StorageTemp;
             ModuleDataPostBuffer[i].Timestamp = Timestamp;
             ModuleDataPostBuffer[i].LDRStatus = digitalRead(LDR_Sensor);
+            ModuleDataPostBuffer[i].ReleState = rele_state;
             vTaskDelay(delayRead / portTICK_PERIOD_MS);
         }
         unsigned long millisvar = millis();
@@ -326,6 +328,7 @@ void serializeModuleDataPostBuffer()
         postStringSerialize = postStringSerialize + "{\"AmbientTemperature\": " + String(ModuleDataPostBuffer[i].AmbientTemperature) + ",";
         postStringSerialize = postStringSerialize + "\"StorageTemperature\": " + String(ModuleDataPostBuffer[i].StorageTemperature) + ",";
         postStringSerialize = postStringSerialize + "\"LDRStatus\": " + String(ModuleDataPostBuffer[i].LDRStatus) + ",";
+        postStringSerialize = postStringSerialize + "\"ReleState\": " + String(ModuleDataPostBuffer[i].ReleState) + ",";
         postStringSerialize = postStringSerialize + "\"ModuleID\": " + String(ModuleDataPostBuffer[i].ModuleID) + ",";
         postStringSerialize = postStringSerialize + "\"Timestamp\": \"" + ModuleDataPostBuffer[i].Timestamp + "\"}";
         if (i < (rateReadPeriod - 1))
