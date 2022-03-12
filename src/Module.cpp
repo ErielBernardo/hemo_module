@@ -41,10 +41,10 @@ void insert_temp(float storage_temp, int ldr)
 
     // Specify content-type header
     http.addHeader("Accept", "*/*");
-    //http.addHeader("accept", "application/json");
-    //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-    //http.addHeader("Accept-Encoding", "gzip, deflate, br");
-    //http.addHeader("Content-Type", "application/json");
+    // http.addHeader("accept", "application/json");
+    // http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    // http.addHeader("Accept-Encoding", "gzip, deflate, br");
+    // http.addHeader("Content-Type", "application/json");
 
     // Data to send with HTTP POST
     //  String httpRequestData = "temp=" + String(temp) + "&mod_id=" + String(mod_id);
@@ -87,10 +87,10 @@ void insert_temp_test(int ldr)
 
     // Specify content-type header
     http.addHeader("Accept", "*/*");
-    //http.addHeader("accept", "application/json");
-    //http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-    //http.addHeader("Accept-Encoding", "gzip, deflate, br");
-    //http.addHeader("Content-Type", "application/json");
+    // http.addHeader("accept", "application/json");
+    // http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    // http.addHeader("Accept-Encoding", "gzip, deflate, br");
+    // http.addHeader("Content-Type", "application/json");
 
     // Data to send with HTTP POST
     //  String httpRequestData = "temp=" + String(temp) + "&mod_id=" + String(mod_id);
@@ -242,7 +242,7 @@ void HandlerWiFi(void *pvParameters)
 {
     for (;;)
     { // Loop infinito
-        //Check WiFi connection status
+        // Check WiFi connection status
         checkNetwork();
         vTaskDelay(taskPeriodWifi / portTICK_PERIOD_MS);
     }
@@ -251,18 +251,17 @@ void HandlerWiFi(void *pvParameters)
 void HandlerTemperature(void *pvParameters)
 {
     for (;;)
-    { // Loop infinito
-        // Get temperature from DS18B sensors status
-        updateTemps();
+    {                  // Loop infinito
+        updateTemps(); // Get temperature from DS18B sensors status
         if (StorageTemp < BULLET_TEMP)
         {
             rele_state = LOW; // Turn off rele
         }
-        else if (StorageTemp > BULLET_TEMP + 1)
+        else if (StorageTemp > BULLET_TEMP + 0.5)
         {
             rele_state = HIGH; // Turn on rele
         }
-        digitalWrite(Rele, rele_state); // Turn on rele
+        digitalWrite(Rele, rele_state); // Define state rele
         vTaskDelay(taskPeriodTemperature / portTICK_PERIOD_MS);
     }
 }
